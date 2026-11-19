@@ -1,0 +1,4 @@
+# Sunset Vice Cover Lab — local build output, never committed.
+out/
+node_modules/
+.DS_Store

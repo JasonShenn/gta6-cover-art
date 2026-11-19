@@ -1,23 +1,112 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cover Snap</title>
+<title>Sunset Vice Cover Lab — GTA-style multi-panel cover maker</title>
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-<main class="app">
-  <section class="controls">
-    <h1>Cover Snap</h1>
-    <p>A photo and a caption, made into a square cover.</p>
-    <label>Photo <input id="photo" type="file" accept="image/*"></label>
-    <label>Caption <input id="caption" type="text" maxlength="40" value="Sunset Heist"></label>
-    <button id="export" type="button">Export PNG 1080 x 1080</button>
-    <p id="status" role="status"></p>
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-sun" aria-hidden="true"></span>
+    <span class="brand-name">SUNSET VICE</span>
+    <span class="brand-lab">COVER LAB</span>
+  </div>
+  <p class="tagline">Turn your photos into a Vice City sunset poster — panels, bold type, one PNG to share.</p>
+</header>
+
+<main class="workbench">
+  <aside class="panel-controls" aria-label="Cover controls">
+    <section class="control-group">
+      <h2>1 · Layout</h2>
+      <div class="button-row" id="layoutRow">
+        <button type="button" data-layout="vice-grid" class="choice active">Vice Grid</button>
+        <button type="button" data-layout="neon-split" class="choice">Neon Split</button>
+        <button type="button" data-layout="sunset-strip" class="choice">Sunset Strip</button>
+      </div>
+      <p class="hint">Vice Grid is the classic poster: one hero panel over two small ones.</p>
+    </section>
+
+    <section class="control-group">
+      <h2>2 · Photos</h2>
+      <div class="panel-picker" id="panelPicker" aria-label="Choose a panel to edit"></div>
+      <label class="file-button" for="photoFile">Upload a photo for this panel</label>
+      <input type="file" id="photoFile" accept="image/*" hidden>
+      <div class="button-row">
+        <button type="button" id="loadSamples">Load sample photos</button>
+        <button type="button" id="fillAll">Fill all panels with this photo</button>
+      </div>
+      <div class="slider-row">
+        <label for="zoomRange">Zoom <span id="zoomValue">100%</span></label>
+        <input type="range" id="zoomRange" min="50" max="300" value="100" step="1">
+      </div>
+      <div class="slider-row">
+        <label for="panXRange">Pan left / right</label>
+        <input type="range" id="panXRange" min="-100" max="100" value="0" step="1">
+      </div>
+      <div class="slider-row">
+        <label for="panYRange">Pan up / down</label>
+        <input type="range" id="panYRange" min="-100" max="100" value="0" step="1">
+      </div>
+      <p class="hint">Tip: drag the photo inside the preview to move it, scroll over it to zoom.</p>
+    </section>
+
+    <section class="control-group">
+      <h2>3 · Caption</h2>
+      <label class="field-label" for="captionInput">Big caption</label>
+      <input type="text" id="captionInput" value="SUNSET HEIST" maxlength="28" autocomplete="off">
+      <label class="field-label" for="subInput">Small line</label>
+      <input type="text" id="subInput" value="VICE CITY • 2026" maxlength="40" autocomplete="off">
+      <div class="swatches" id="captionColors" aria-label="Caption colour">
+        <button type="button" data-color="#ffd166" class="swatch active" style="background:#ffd166" aria-label="Sun gold"></button>
+        <button type="button" data-color="#ff5ea8" class="swatch" style="background:#ff5ea8" aria-label="Neon pink"></button>
+        <button type="button" data-color="#ffffff" class="swatch" style="background:#ffffff" aria-label="White"></button>
+        <button type="button" data-color="#4de8ff" class="swatch" style="background:#4de8ff" aria-label="Neon cyan"></button>
+      </div>
+      <div class="slider-row">
+        <label for="captionSizeRange">Caption size <span id="captionSizeValue">100%</span></label>
+        <input type="range" id="captionSizeRange" min="60" max="140" value="100" step="1">
+      </div>
+    </section>
+
+    <section class="control-group">
+      <h2>4 · Colour grade</h2>
+      <div class="button-row" id="gradeRow">
+        <button type="button" data-grade="sunset" class="choice active">Sunset</button>
+        <button type="button" data-grade="neon" class="choice">Neon</button>
+        <button type="button" data-grade="noir" class="choice">Noir</button>
+      </div>
+    </section>
+
+    <section class="control-group export-group">
+      <h2>5 · Export PNG</h2>
+      <div class="button-row" id="sizeRow">
+        <button type="button" data-size="1080x1080" class="choice active">1080 × 1080</button>
+        <button type="button" data-size="1080x1350" class="choice">1080 × 1350</button>
+        <button type="button" data-size="1920x1080" class="choice">1920 × 1080</button>
+      </div>
+      <button type="button" id="exportBtn" class="export-button">Export PNG</button>
+      <p class="status" id="statusLine" role="status">Ready — your photos never leave this machine.</p>
+    </section>
+  </aside>
+
+  <section class="stage" aria-label="Cover preview">
+    <div class="canvas-wrap">
+      <canvas id="coverPreview" width="1080" height="1080"></canvas>
+    </div>
+    <p class="stage-hint" id="stageHint">Click a panel to edit it. The preview is exactly what the PNG will look like.</p>
   </section>
-  <canvas id="cover" width="1080" height="1080" aria-label="The cover"></canvas>
 </main>
-<script type="module" src="./src/main.js"></script>
+
+<footer class="footnote">
+  <p>Sunset Vice Cover Lab — an original cover maker. No Rockstar Games logo, artwork or font.
+  Type is Anton &amp; Archivo Black, both under the SIL Open Font License. Sample photos were made
+  with an image model for make.fun and are free to use. Everything runs offline; photos are read on
+  your machine and never uploaded.</p>
+</footer>
+
+<script type="module" src="./src/cover-maker.js"></script>
 </body>
 </html>
